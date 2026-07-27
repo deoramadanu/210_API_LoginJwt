@@ -1,6 +1,7 @@
 const db = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const user = require('../models/user');
 
 const User = db.User;
 
@@ -22,7 +23,7 @@ async function register(req, res) {
             return res.status(409).json({ 
                 message: "Email sudah terdaftar." 
             });
-        }
+        }  
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -45,8 +46,9 @@ async function register(req, res) {
             error: error.message
         });
     }
+}
 
-    async function login(req, res) {
+async function login(req, res) {
     try {
         const { email, password } = req.body;
 
@@ -68,7 +70,7 @@ async function register(req, res) {
 
         const isMatch = await bcrypt.compare(password, user.password);
 
-      if (!isMatch) {
+        if (!isMatch) {
             return res.status(401).json({
                 message: "Email atau password salah."
             });
@@ -88,14 +90,15 @@ async function register(req, res) {
             message: "Login berhasil.",
             token
         });
-        } catch (error) {
+
+    } catch (error) {
         return res.status(500).json({
             message: error.message
         });
     }
 }
+
 module.exports = {
     register,
     login
 };
-}
